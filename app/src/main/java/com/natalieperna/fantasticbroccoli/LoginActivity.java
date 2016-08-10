@@ -3,6 +3,7 @@ package com.natalieperna.fantasticbroccoli;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -28,9 +29,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.android.volley.*;
+import com.android.volley.toolbox.*;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -306,14 +315,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            final Context context = getApplicationContext();
             // TODO: attempt authentication against a network service.
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+            // TODO Catch network exceptions
+            // TODO Save URL in environment config file
+            String apiUrl = getResources().getString(R.string.api_url);
+            String url = apiUrl + "login";
+
+            Map<String,String> body = new HashMap<String, String>();
+            body.put("email", mEmail);
+            body.put("password", mPassword);
+
+            JsonObjectRequest jr = new JsonObjectRequest
+                    (Request.Method.POST, url, new JSONObject(body), new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+            
+            RequestQueue queue = Volley.newRequestQueue(context);
+            queue.add(jr);
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
