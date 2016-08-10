@@ -3,22 +3,20 @@ package com.natalieperna.fantasticbroccoli;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,15 +29,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.android.volley.*;
-import com.android.volley.toolbox.*;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -323,7 +325,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             String apiUrl = getResources().getString(R.string.api_url);
             String url = apiUrl + "login";
 
-            Map<String,String> body = new HashMap<String, String>();
+            Map<String, String> body = new HashMap<String, String>();
             body.put("email", mEmail);
             body.put("password", mPassword);
 
@@ -339,7 +341,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
                         }
                     });
-            
+
             RequestQueue queue = Volley.newRequestQueue(context);
             queue.add(jr);
 
