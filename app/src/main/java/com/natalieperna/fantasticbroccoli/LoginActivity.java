@@ -367,9 +367,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Saving values to editor
             editor.apply();
 
-            // Starting profile activity
-            //Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-            //startActivity(intent);
+            // Starting welcome activity
+            Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
+            finish();
+            startActivity(intent);
         }
 
         // TODO respond differently to different types of failures
