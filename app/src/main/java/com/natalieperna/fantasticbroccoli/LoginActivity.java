@@ -6,7 +6,9 @@ import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -36,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -312,25 +315,38 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             final Context context = getApplicationContext();
             // TODO: attempt authentication against a network service.
 
-            // TODO Catch network exceptions
-            // TODO Save URL in environment config file
-            String apiUrl = getResources().getString(R.string.api_url);
+            // Construct API login URL
+            final String apiUrl = getResources().getString(R.string.api_url);
             String url = apiUrl + "login";
 
+            // Build key-value body for login POST request
             Map<String, String> body = new HashMap<String, String>();
             body.put("email", mEmail);
             body.put("password", mPassword);
 
+            // POST login request to API
             JsonObjectRequest jr = new JsonObjectRequest
-                    (Request.Method.POST, url, new JSONObject(body), new Response.Listener<JSONObject>() {
+                    (Request.Method.POST, url, new JSONObject(body),
+                    // Response from API
+                    new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show();
+                            try {
+                                // Store API token from successful response (to be used for future API calls)
+                                String token = (String) response.get("token");
+                                success(mEmail, token);
+                            } catch (JSONException e) {
+                                // Fail if API token could not be parsed from response
+                                failure();
+                            }
                         }
-                    }, new Response.ErrorListener() {
+                    },
+                    // Request failure
+                    new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                            // TODO inspect error and respond to different error types differently
+                            failure();
                         }
                     });
 
@@ -338,6 +354,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             queue.add(jr);
 
             return true;
+        }
+
+        private void success(String email, String token) {
+            // Creating a shared preference
+            SharedPreferences sharedPreferences = LoginActivity.this.getSharedPreferences(Config.SharedPref.STORE, Context.MODE_PRIVATE);
+
+            // Creating editor to store values to shared preferences
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            // Adding values to editor
+            editor.putBoolean(Config.SharedPref.LOGGEDIN, true);
+            editor.putString(Config.SharedPref.EMAIL, email);
+            editor.putString(Config.SharedPref.TOKEN, token);
+
+            // Saving values to editor
+            editor.apply();
+
+            // Starting profile activity
+            //Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+            //startActivity(intent);
+        }
+
+        // TODO respond differently to different types of failures
+        private void failure() {
+            // TODO show error message
         }
 
         @Override
