@@ -8,9 +8,6 @@ public class Config {
     }
 
     public class SharedPref {
-        // Name of our shared preferences
-        public static final String STORE = "fantasticbroccoli";
-
         // Key to store the boolean to track if user is logged in or not
         public static final String LOGGEDIN = "loggedin";
 
