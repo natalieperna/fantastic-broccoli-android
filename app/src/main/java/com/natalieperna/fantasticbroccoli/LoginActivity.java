@@ -313,11 +313,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             final Context context = getApplicationContext();
-            // TODO: attempt authentication against a network service.
-
-            // Construct API login URL
-            final String apiUrl = getResources().getString(R.string.api_url);
-            String url = apiUrl + "login";
 
             // Build key-value body for login POST request
             Map<String, String> body = new HashMap<String, String>();
@@ -326,7 +321,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             // POST login request to API
             JsonObjectRequest jr = new JsonObjectRequest
-                    (Request.Method.POST, url, new JSONObject(body),
+                    (Request.Method.POST, Config.ApiUrl.LOGIN, new JSONObject(body),
                     // Response from API
                     new Response.Listener<JSONObject>() {
                         @Override
