@@ -374,20 +374,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // TODO respond differently to different types of failures
         private void failure() {
-            // TODO show error message
+            mPasswordView.setError(getString(R.string.error_incorrect_password));
+            mPasswordView.requestFocus();
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
         }
 
         @Override
